@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-data = pd.read_csv("data/data_p_1.2_i_0.8_d_0.2.csv")
+data = pd.read_csv("data/data-setpoint-berubah-2.csv")
 # Parameter model
 dt = 1.0  # Time step (seconds)
 Q = 0.01  # Process noise covariance
@@ -54,14 +54,15 @@ for k in range(num_steps):
     estimated_velocity[k] = x
 
 # Plotting results
-plt.figure()
-plt.plot(waktu,set_point,'g--',label="Set Point")
-plt.plot(waktu, measurements,'r', label='Measurements')
-plt.plot(waktu, estimated_velocity, 'b-', label='Estimasi EKF')
-plt.xlabel('Time')
-plt.ylabel('Water Flow Velocity (m/s)')
-plt.legend()
-plt.title('Water Flow Velocity Estimation using Extended Kalman Filter')
-plt.grid(True)
-plt.axis((0,60,0,2))
-plt.show()
+if __name__ == '__main__':
+    plt.figure()
+    plt.plot(waktu,set_point,'g--',label="Set Point")
+    plt.plot(waktu, measurements,'r', label='Measurements')
+    plt.plot(waktu, estimated_velocity, 'b-', label='Estimasi EKF')
+    plt.xlabel('Time')
+    plt.ylabel('Water Flow Velocity (m/s)')
+    plt.legend()
+    plt.title('Water Flow Velocity Estimation using Extended Kalman Filter')
+    plt.grid(True)
+    plt.axis((0,60,0,2))
+    plt.show()

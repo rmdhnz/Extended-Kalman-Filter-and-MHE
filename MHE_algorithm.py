@@ -1,71 +1,61 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Dense, LSTM
-from keras.optimizers import Adam
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
+from scipy.optimize import minimize
 import pandas as pd
-data = pd.read_csv("data/data_p_1.2_i_0.8_d_0.2.csv")
-# Parameter model
-true_velocity = 2  # True velocity (m/s)
+data = pd.read_csv("data/data-setpoint-berubah-2.csv")
+
+# Number of time steps for MHE
+N = 5
 num_steps = len(data["Flow Measured Value"])     # Number of time steps
 waktu = data["Time"]
-set_point = data["Flow Set Point"]   # Number of time steps
-timesteps = 10     # Number of time steps to use as input for prediction
-
 # Generate noisy measurements
-np.random.seed(42)  # For reproducibility
+true_velocity = 2  # True velocity (m/s)
+
+# True speed of water flow (for simulation)
+true_speeds = data["Flow Set Point"]
 measurements = data["Flow Measured Value"]
+# Simulated noisy measurements
+np.random.seed(0)  # For reproducibility
 
-# Prepare dataset
-X = []
-y = []
-for i in range(timesteps, num_steps):
-    X.append(measurements[i-timesteps:i])
-    y.append(measurements[i])
-X, y = np.array(X), np.array(y)
 
-# Normalize data
-scaler = MinMaxScaler(feature_range=(0, 1))
-X = scaler.fit_transform(X)
-y = scaler.fit_transform(y.reshape(-1, 1))
+# Process noise (assumed to be small)
+process_noise_std = 0.1
 
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Initial estimate
+initial_estimate = 1.0
 
-# Reshape data for LSTM input (samples, time steps, features)
-X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
-X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
+def mhe_objective(estimate, measurements, N):
+    estimate = np.asarray(estimate)
+    process_error = np.diff(estimate)
+    measurement_error = estimate - measurements[:len(estimate)]
+    
+    # Objective function to minimize
+    return np.sum(process_error**2) + np.sum(measurement_error**2)
 
-# Build the LSTM model
-model = Sequential()
-model.add(LSTM(50, return_sequences=True, input_shape=(timesteps, 1)))
-model.add(LSTM(50, return_sequences=False))
-model.add(Dense(25))
-model.add(Dense(1))
+# Sliding window MHE
+estimated_speeds = []
+for t in range(len(true_speeds) - N):
+    window_measurements = measurements[t:t+N]
+    if t == 0:
+        estimate = np.full(N, initial_estimate)
+    else:
+        estimate = np.full(N, estimated_speeds[-1])
 
-# Compile the model
-model.compile(optimizer=Adam(learning_rate=0.001), loss='mean_squared_error')
+    result = minimize(mhe_objective, estimate, args=(window_measurements, N))
+    estimated_speeds.append(result.x[0])
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=20, batch_size=32, validation_data=(X_test, y_test))
+# Append the last estimates for completeness
+estimated_speeds += list(result.x[1:])
+print(len(measurements))
+# Plot the results
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
 
-# Make predictions
-predictions = model.predict(X_test)
-predictions = scaler.inverse_transform(predictions)
-
-# Inverse transform the test set for comparison
-y_test = scaler.inverse_transform(y_test)
-
-# Plotting results
-plt.figure()
-plt.plot(y_test, 'b-', label='True Velocity')
-plt.plot(predictions, 'r-', label='Predicted Velocity')
-plt.xlabel('Time')
-plt.ylabel('Water Flow Velocity (m/s)')
-plt.legend()
-plt.title('Water Flow Velocity Estimation using Neural Network')
-plt.grid(True)
-plt.show()
+    plt.plot(true_speeds, label='Set Point',linestyle='dotted')
+    plt.plot(measurements, label='Flow Rate',color='red')
+    plt.plot(estimated_speeds, label='MHE',color="green")
+    plt.legend()
+    plt.xlabel('Time Step')
+    plt.ylabel('Speed')
+    plt.title('Moving Horizon Estimation of Water Flow Speed')
+    plt.axis((0,600,0,2.5))
+    plt.show()
