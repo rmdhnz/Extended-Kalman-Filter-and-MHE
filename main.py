@@ -1,17 +1,42 @@
 from MHE_algorithm import estimated_speeds
 from EKF import estimated_velocity
-import pandas as pd
 import matplotlib.pyplot as plt
-data = pd.read_csv("data/data-setpoint-berubah-2.csv")
+from tes import data
 flow_rate = data["Flow Measured Value"]
+waktu = data["Time"]
 set_point = data["Flow Set Point"]
-plt.plot(set_point, label='Set Point',color="orange",linestyle='dotted')
-plt.plot(flow_rate, label='Flowmeter',color='red')
-plt.plot(estimated_speeds, label='MHE',color="green")
-plt.plot(estimated_velocity, label='EKF',color="blue")
-plt.legend()
-plt.xlabel('Time Step')
-plt.ylabel('Speed')
-plt.title('MHSE vs EKF')
-plt.axis((0,600,0,2.5))
+axis_need = (0,60,0,2.5)
+def show_all() : 
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  plt.plot(waktu,estimated_velocity, label='EKF',color="blue")
+  waktu.pop(len(waktu)-1)
+  plt.plot(waktu,estimated_speeds, label='MHE',color="green")
+  plt.legend()
+  plt.title('MHSE vs EKF')
+  plt.xlabel('Waktu (s)')
+  plt.ylabel('Speed')
+  plt.grid(True)
+  plt.axis(axis_need)
+
+def show_by_subplot(): 
+  plt.subplot(2,1,1)
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  plt.plot(waktu,estimated_velocity, label='EKF',color="blue")
+  plt.grid(True)
+  plt.legend()
+  plt.axis(axis_need)
+
+  plt.subplot(2,1,2)
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  waktu.pop(len(waktu)-1)
+  plt.plot(waktu,estimated_speeds, label='MHE',color="green")
+  plt.grid(True)
+  plt.legend()
+  plt.axis(axis_need)
+
+show_by_subplot()
+# show_all()
 plt.show()

@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
-import pandas as pd
-data = pd.read_csv("data/data-setpoint-berubah-2.csv")
+from tes import data
 
 # Number of time steps for MHE
 N = 5
@@ -45,7 +44,6 @@ for t in range(len(true_speeds) - N):
 
 # Append the last estimates for completeness
 estimated_speeds += list(result.x[1:])
-print(len(measurements))
 # Plot the results
 if __name__ == '__main__':
     import matplotlib.pyplot as plt

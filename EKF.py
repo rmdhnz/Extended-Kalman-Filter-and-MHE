@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-data = pd.read_csv("data/data-setpoint-berubah-2.csv")
+from tes import data
 # Parameter model
 dt = 1.0  # Time step (seconds)
 Q = 0.01  # Process noise covariance
