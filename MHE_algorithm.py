@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.optimize import minimize
 from tes import data
+import time
+start_mhe = time.time()
 
 # Number of time steps for MHE
 N = 5
@@ -45,6 +47,7 @@ for t in range(len(true_speeds) - N):
 # Append the last estimates for completeness
 estimated_speeds += list(result.x[1:])
 # Plot the results
+end_mhe = time.time()
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 

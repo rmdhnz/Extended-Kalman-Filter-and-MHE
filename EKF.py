@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from tes import data
+import time
+start_ekf = time.time()
 # Parameter model
 dt = 1.0  # Time step (seconds)
 Q = 0.01  # Process noise covariance
@@ -51,7 +53,7 @@ for k in range(num_steps):
 
     # Store the estimated velocity
     estimated_velocity[k] = x
-
+end_ekf = time.time()
 # Plotting results
 if __name__ == '__main__':
     plt.figure()
@@ -65,3 +67,4 @@ if __name__ == '__main__':
     plt.grid(True)
     plt.axis((0,60,0,2))
     plt.show()
+
