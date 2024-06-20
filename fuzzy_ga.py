@@ -76,8 +76,19 @@ def fis_ga_optimization(fis, data, output, generations=100, population_size=20):
         return np.mean((predictions - output) ** 2)
     
     bounds = [(0, 10)] * len(fis.params)  # Define bounds for the GA
-    result = differential_evolution(fitness, bounds, maxiter=generations, popsize=population_size)
+
+    # Callback function to print the progress
+    def callback(xk, convergence):
+        fis.params = xk
+        predictions = np.array([fis.evaluate(x) for x in data])
+        current_fitness = np.mean((predictions - output) ** 2)
+        print(f"Current fitness: {current_fitness:.6f}")
+        print(f"Current parameters: {xk}")
+
+    result = differential_evolution(fitness, bounds, maxiter=generations, popsize=population_size, callback=callback)
     fis.params = result.x
+    print(f"Final fitness: {result.fun:.6f}")
+    print(f"Optimized parameters: {result.x}")
 
 # Simulate the system with the FIS controller
 def simulate_fis(fis, initial_state, t):
@@ -133,4 +144,4 @@ if __name__ == "__main__":
     plt.title('Control Force')
 
     plt.tight_layout()
-    plt.show()
+    plt.show() 
