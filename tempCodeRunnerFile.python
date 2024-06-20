@@ -1,0 +1,15 @@
+import copy
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import h5py
+import scipy
+from scipy import ndimage
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from tes import data
+
+flow_rate = data["Flow Measured Value"]
+waktu = data["Time"]
+set_point = data["Flow Set Point"]
+flow_rate
