@@ -50,7 +50,7 @@ def show_by_subplot():
 
 
 
-ekf_mse_val =  0
+ekf_mse_val = 0
 mhe_mse_val = 0
 for i in range(min(len(flow_rate),len(estimated_velocity))): 
   ekf_mse_val+= (flow_rate[i]-estimated_velocity[i])**2

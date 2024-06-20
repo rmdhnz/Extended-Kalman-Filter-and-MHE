@@ -2,7 +2,6 @@ from sklearn.neural_network import MLPRegressor
 from tes import data
 import numpy as np
 from sklearn.metrics import mean_squared_error
-import matplotlib.pyplot as plt
 import time
 start_nn = time.time()
 flow_csv = data["Flow Measured Value"]
@@ -37,7 +36,7 @@ pred = np.reshape(pred,(length_data,1))
 end_nn = time.time()
 if __name__ == "__main__":
     print('RMSE: ', test_set_mse)
-
+    import matplotlib.pyplot as plt
     plt.plot(waktu,set_point_csv,label="set point",color="orange",linestyle="dotted")
     plt.plot(waktu,flow_csv,label="flow estimated",color="red")
     plt.plot(waktu,pred,label="prediksi",color="blue")
