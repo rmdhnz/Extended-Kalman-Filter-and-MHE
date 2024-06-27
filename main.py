@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from MHE_algorithm import estimated_speeds,start_mhe,end_mhe
 from EKF import estimated_velocity,start_ekf,end_ekf
 from NeuralNetworkz import pred as flow_pred
@@ -12,6 +13,7 @@ def show_all() :
   plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
   plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
   plt.plot(waktu,estimated_velocity, label='EKF',color="blue")
+  plt.plot(waktu,flow_pred,label="NN",color="purple")
   waktu.pop(len(waktu)-1)
   plt.plot(waktu,estimated_speeds, label='MHE',color="green")
   plt.legend()
@@ -47,7 +49,39 @@ def show_by_subplot():
   plt.legend()
   plt.axis(axis_need)
 
+def ekf_plot(): 
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  plt.plot(waktu,estimated_velocity, label='EKF',color="blue")
+  plt.legend()
+  plt.title('EKF Plot')
+  plt.xlabel('Waktu (s)')
+  plt.ylabel('Speed')
+  plt.grid(True)
+  plt.axis(axis_need)
 
+def nn_plot(): 
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  plt.plot(waktu,flow_pred, label='NN',color="blue")
+  plt.legend()
+  plt.title('Neural Network Plot')
+  plt.xlabel('Waktu (s)')
+  plt.ylabel('Speed')
+  plt.grid(True)
+  plt.axis(axis_need)
+
+def mhe_plot(): 
+  plt.plot(waktu,set_point, label='Set Point',color="orange",linestyle='dotted')
+  plt.plot(waktu,flow_rate, label='Flowmeter',color='red')
+  waktu.pop(len(waktu)-1)
+  plt.plot(waktu,estimated_speeds, label='MHE',color="blue")
+  plt.legend()
+  plt.title('MHE Plot')
+  plt.xlabel('Waktu (s)')
+  plt.ylabel('Speed')
+  plt.grid(True)
+  plt.axis(axis_need)
 
 ekf_mse_val =  0
 mhe_mse_val = 0
@@ -61,6 +95,9 @@ print("EKF Execution time : {} ms".format((end_ekf-start_ekf)*10**3))
 print("MHE Execution time : {} ms".format((end_mhe-start_mhe)*10**3))
 print("MSE Value for Neural Network : {}".format(test_set_mse))
 print("Execution time for Neural Network : {} ms".format((end_nn-start_nn)*10**3))
-show_by_subplot()
+# show_by_subplot()
 # show_all()
+# mhe_plot()
+# ekf_plot()
+# nn_plot()
 plt.show()
